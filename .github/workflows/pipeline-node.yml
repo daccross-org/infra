@@ -1,0 +1,79 @@
+name: Workflow Pipeline CI Frontend
+on:
+  workflow_call:
+    inputs:
+      docker-tag-prefix:
+        description: "Docker Tag Prefix"
+        required: true
+        type: string
+        default: dev-
+      run-unit-tests:
+        description: "true/false run unit tests"
+        required: false
+        type: string
+        default: "false"
+      docker-in-login:
+        description: "true/false run unit tests"
+        required: false
+        type: boolean
+        default: true
+      node-version:
+        description: "Node version"
+        required: false
+        type: string
+        default: "20.x"
+      project-key:
+        description: "Project key, names the image name in ACR"
+        required: true
+        type: string
+        default: ""
+      base-dir:
+        description: "Base dir location for pom and Dockerfile"
+        required: false
+        type: string
+        default: "Frontend/"
+      base-href:
+        description: "Base href for app"
+        required: true
+        type: string
+    outputs:
+      docker-final-tag: 
+        description: "Final Tag"
+        value: ${{ jobs.pipeline-ci.outputs.docker-final-tag }}
+permissions: write-all
+jobs:
+  pipeline-ci:
+    name: Pipeline CI Frontend java
+    runs-on: ubuntu-latest
+    outputs:
+      docker-final-tag: ${{ steps.out.outputs.docker-final-tag }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Setup npm and node
+        uses: daccross-org/infra/.github/actions/composite/common/node/setup@main
+        with:
+          node-version: ${{ inputs.node-version }}
+      - name: Get SHA
+        id: sha
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Build
+        uses: daccross-org/infra/.github/actions/composite/node/build@main
+        with:
+          project-key: ${{ inputs.project-key }}
+          base-dir: ${{ inputs.base-dir }}
+          base-href: "${{inputs.base-href}}"
+          git-sha: ${{ steps.sha.outputs.sha_short }}
+      - name: Docker Push
+        uses: daccross-org/infra/.github/actions/composite/docker/push@main
+        with:
+          project-key: ${{ inputs.project-key }}
+          docker-registry: ${{ secrets.docker-registry }}
+          docker-username: ${{ secrets.docker-username }}
+          docker-password: ${{ secrets.docker-password }}
+          docker-tag: ${{ inputs.docker-tag-prefix }}${{ steps.sha.outputs.sha_short }}
+          base-dir: ${{ inputs.base-dir }}
+          art-location: dist
+      - name: Output
+        id: out
+        run: echo "docker-final-tag=${{ inputs.docker-tag-prefix }}${{ steps.sha.outputs.sha_short }}" >> $GITHUB_OUTPUT

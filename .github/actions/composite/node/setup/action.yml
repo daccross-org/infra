@@ -1,0 +1,17 @@
+name: 'Setup nodejs action'
+description: 'Setup nodejs, npm.'
+inputs:
+  node-version:
+    description: "Node version required"
+    required: true
+    default: '21.x'
+runs:
+  using: "composite"
+  steps:
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+      
+      - shell: bash
+        run: npm -v && node -v

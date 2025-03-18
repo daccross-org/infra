@@ -1,0 +1,38 @@
+replicaCount: 1
+
+image:
+  name: servicemesh-node
+  pullPolicy: Always
+  tag: latest
+
+nameOverride: ""
+fullnameOverride: ""
+
+extraLabels:
+  - app.kubernetes.io/part-of: servicemesh-node
+  - app.openshift.io/runtime: nodejs
+
+extraAnnotations:
+  app.openshift.io/connects-to: '[{"apiVersion":"apps/v1","kind":"Deployment","name":"servicemesh-full-node-b"}]'
+
+env:
+  - name: JUMPS
+    value: "6"
+  - name: ID
+    value: "A"
+  - name: CHAIN_SVC
+    value: "http://servicemesh-node-b:3000/chain"
+  - name: JAEGER_COLLECTOR_ENDPOINT
+    value: "http://jaeger:14268/api/traces"
+
+service:
+  type: ClusterIP
+  port: 3000
+route:
+  enable: false
+  wildcardDomain: ""
+
+
+servicemesh:
+  gateway: "servicemesh-node"
+  subset: v1

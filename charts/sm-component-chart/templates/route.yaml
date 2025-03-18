@@ -1,0 +1,18 @@
+{{- if .Values.route.enable }}
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: {{ .Values.servicemesh.gateway }}
+  labels:
+    {{- include "sm-component.labels" . | nindent 4 }}
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - {{ .Values.servicemesh.gateway }}-istio-system.{{ .Values.route.wildcardDomain }}
+{{- end }}

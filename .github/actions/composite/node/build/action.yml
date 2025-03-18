@@ -1,0 +1,43 @@
+name: 'Build image'
+description: 'Build Node JS Project'
+inputs:
+  project-key:
+    description: ""
+    required: true
+  art-location:
+    description: ""
+    required: false
+    default: "dist"
+  base-dir:
+    description: "Run npm in a different directory"
+    required: false
+    default: "."
+  base-href:
+    description: "Build with different href"
+    required: false
+    default: "/"
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      name: install dependencies
+      env:
+        INPUT_PROJECT_KEY: ${{ inputs.project-key }}
+        INPUT_BASE_DIR: ${{ inputs.base-dir }}
+      run: |
+        npm ci \
+        --prefix ${INPUT_BASE_DIR}
+    - shell: bash
+      name: build
+      env:
+        INPUT_PROJECT_KEY: ${{ inputs.project-key }}
+        INPUT_BASE_DIR: ${{ inputs.base-dir }}
+        INPUT_BASE_HREF: ${{ inputs.base-href }}
+      run: |
+        npm run build \
+        --prefix ${INPUT_BASE_DIR} \
+        -- --base-href=${INPUT_BASE_HREF}
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.project-key }}
+        path: ${{ inputs.base-dir }}/${{ inputs.art-location }}/
