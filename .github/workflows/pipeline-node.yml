@@ -5,27 +5,21 @@ on:
       docker-in-registry:
         description: "Docker registry"
         required: true
-        type: string
       docker-in-username:
         description: "Docker username"
         required: true
-        type: string
       docker-in-password:
         description: "Docker password"
         required: true
-        type: string
       docker-out-registry:
         description: "Docker registry"
         required: true
-        type: string
       docker-out-username:
         description: "Docker username"
         required: true
-        type: string
       docker-out-password:
         description: "Docker password"
         required: true
-        type: string
     inputs:
       docker-tag-prefix:
         description: "Docker Tag Prefix"
