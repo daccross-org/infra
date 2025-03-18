@@ -1,4 +1,4 @@
-name: Workflow Pipeline CI Frontend
+name: Workflow Pipeline CI NodeJS
 on:
   workflow_call:
     secrets:
