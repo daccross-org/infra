@@ -1,6 +1,31 @@
 name: Workflow Pipeline CI Frontend
 on:
   workflow_call:
+    secrets:
+      docker-in-registry:
+        description: "Docker registry"
+        required: true
+        type: string
+      docker-in-username:
+        description: "Docker username"
+        required: true
+        type: string
+      docker-in-password:
+        description: "Docker password"
+        required: true
+        type: string
+      docker-out-registry:
+        description: "Docker registry"
+        required: true
+        type: string
+      docker-out-username:
+        description: "Docker username"
+        required: true
+        type: string
+      docker-out-password:
+        description: "Docker password"
+        required: true
+        type: string
     inputs:
       docker-tag-prefix:
         description: "Docker Tag Prefix"
@@ -68,9 +93,12 @@ jobs:
         uses: daccross-org/infra/.github/actions/composite/docker/push@main
         with:
           project-key: ${{ inputs.project-key }}
-          docker-registry: ${{ secrets.docker-registry }}
-          docker-username: ${{ secrets.docker-username }}
-          docker-password: ${{ secrets.docker-password }}
+          docker-in-registry: ${{ secrets.docker-in-registry }}
+          docker-in-username: ${{ secrets.docker-in-username }}
+          docker-in-password: ${{ secrets.docker-in-password }}
+          docker-out-registry: ${{ secrets.docker-out-registry }}
+          docker-out-username: ${{ secrets.docker-out-username }}
+          docker-out-password: ${{ secrets.docker-out-password }}
           docker-tag: ${{ inputs.docker-tag-prefix }}${{ steps.sha.outputs.sha_short }}
           base-dir: ${{ inputs.base-dir }}
           art-location: dist

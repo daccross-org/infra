@@ -1,15 +1,24 @@
 name: 'Build and Push Container Image'
 description: 'Build Container Image, login to Registry and push'
 inputs:
-  docker-registry:
-    description: "Docker Registry"
-    required: false
-  docker-username:
-    description: "Docker Username"
-    required: false
-  docker-password:
-    description: "Docker Password"
-    required: false
+  docker-in-registry:
+    description: "Docker registry"
+    required: true
+  docker-in-username:
+    description: "Docker username"
+    required: true
+  docker-in-password:
+    description: "Docker password"
+    required: true
+  docker-out-registry:
+    description: "Docker registry"
+    required: true
+  docker-out-username:
+    description: "Docker username"
+    required: true
+  docker-out-password:
+    description: "Docker password"
+    required: true
   project-key:
     description: ""
     required: true
@@ -20,7 +29,7 @@ inputs:
   docker-project:
     description: "Docker project"
     required: false
-    default: "oxzacrmdps01"
+    default: ""
   base-dir:
     description: "Base Directory"
     required: false
@@ -35,9 +44,9 @@ runs:
     - name: Login to Input Registry
       uses: redhat-actions/podman-login@v1.7
       with:
-        registry: "${{ inputs.docker-registry }}"
-        username: "${{ inputs.docker-username }}"
-        password: "${{ inputs.docker-password }}"
+        registry: "${{ inputs.docker-in-registry }}"
+        username: "${{ inputs.docker-in-username }}"
+        password: "${{ inputs.docker-in-password }}"
         logout: false
 
     - uses: actions/download-artifact@v4
@@ -64,6 +73,6 @@ runs:
       with:
         image: ${{ steps.build-image.outputs.image }}
         tags: ${{ steps.build-image.outputs.tags }}
-        registry: ${{ inputs.docker-registry }}/${{ inputs.docker-project }}
-        username: "${{ inputs.docker-username }}"
-        password: "${{ inputs.docker-password }}"
+        registry: ${{ inputs.docker-out-registry }}/${{ inputs.docker-project }}
+        username: "${{ inputs.docker-out-username }}"
+        password: "${{ inputs.docker-out-password }}"
