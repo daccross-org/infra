@@ -1,0 +1,34 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{values.component_id | dump}}
+  {%- if values.description %}
+  description: ${{values.description | dump}}
+  {%- endif %}
+  annotations:
+    backstage.io/kubernetes-id: ${{values.component_id}}
+    backstage.io/source-location: url:https://github.com/${{ values.githubOrg }}/${{ values.repoName }}
+    quay.io/repository-slug: ${{ values.repoName }}
+  tags:
+    - java
+    - springboot
+spec:
+  type: service
+  lifecycle: production
+  owner: ${{values.owner | dump}}
+  providesApis:
+    - ${{values.component_id | dump}}
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: ${{values.component_id | dump}}
+  {%- if values.description %}
+  description: ${{values.description | dump}}
+  {%- endif %}
+spec:
+  type: openapi
+  lifecycle: production
+  owner: ${{values.owner | dump}}
+  definition:
+    $text: ./openapi.yaml
