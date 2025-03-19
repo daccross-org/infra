@@ -1,0 +1,103 @@
+name: Workflow Pipeline CI Frontend
+on:
+  workflow_call:
+    secrets:
+      docker-in-registry:
+        description: "Docker registry"
+        required: true
+      docker-in-username:
+        description: "Docker username"
+        required: true
+      docker-in-password:
+        description: "Docker password"
+        required: true
+      docker-out-registry:
+        description: "Docker registry"
+        required: true
+      docker-out-username:
+        description: "Docker username"
+        required: true
+      docker-out-password:
+        description: "Docker password"
+        required: true
+    inputs:
+      docker-tag-prefix:
+        description: "Docker Tag Prefix"
+        required: true
+        type: string
+        default: dev-
+      run-unit-tests:
+        description: "true/false run unit tests"
+        required: false
+        type: string
+        default: "false"
+      docker-in-login:
+        description: "true/false run unit tests"
+        required: false
+        type: boolean
+        default: true
+      java-version:
+        description: "Java version"
+        required: false
+        type: string
+        default: "17"
+      mvn-version:
+        description: "Maven version"
+        required: false
+        type: string
+        default: "3.9.6"
+      project-key:
+        description: "Project key, names the image name in ACR"
+        required: true
+        type: string
+        default: ""
+      base-dir:
+        description: "Base dir location for pom and Dockerfile"
+        required: false
+        type: string
+        default: "BackEnd/"
+    outputs:
+      docker-final-tag: 
+        description: "Final Tag"
+        value: ${{ jobs.pipeline-ci.outputs.docker-final-tag }}
+permissions: write-all
+jobs:
+  pipeline-ci:
+    name: Pipeline CI Frontend java
+    runs-on: ubuntu-latest
+    outputs:
+      docker-final-tag: ${{ steps.out.outputs.docker-final-tag }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Setup java and maven
+        uses: daccross-org/infra/.github/actions/composite/common/java/setup@main
+        with:
+          java-version: ${{ inputs.java-version }}
+          maven-version: ${{ inputs.mvn-version }}
+      - name: Get SHA
+        id: sha
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Build
+        uses: daccross-org/infra/.github/actions/composite/java/build@main
+        with:
+          project-key: ${{ inputs.project-key }}
+          runtime-environment: ${{ inputs.runtime-env }}
+          pom-location: ${{ inputs.base-dir }}
+          run-unit-tests: ${{ inputs.run-unit-tests }}
+      - name: Docker Push
+        uses: daccross-org/infra/.github/actions/composite/docker/push@main
+        with:
+          project-key: ${{ inputs.project-key }}
+          docker-in-registry: ${{ secrets.docker-in-registry }}
+          docker-in-username: ${{ secrets.docker-in-username }}
+          docker-in-password: ${{ secrets.docker-in-password }}
+          docker-out-registry: ${{ secrets.docker-out-registry }}
+          docker-out-username: ${{ secrets.docker-out-username }}
+          docker-out-password: ${{ secrets.docker-out-password }}
+          docker-tag: ${{ inputs.docker-tag-prefix }}${{ steps.sha.outputs.sha_short }}
+          base-dir: ${{ inputs.base-dir }}
+          art-location: dist
+      - name: Output
+        id: out
+        run: echo "docker-final-tag=${{ inputs.docker-tag-prefix }}${{ steps.sha.outputs.sha_short }}" >> $GITHUB_OUTPUT

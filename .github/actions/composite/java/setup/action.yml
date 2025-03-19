@@ -1,0 +1,38 @@
+name: 'Setup maven and java action'
+description: 'Setup java, maven.'
+inputs:
+  java-version:
+    description: "Java version required"
+    required: true
+    default: '21'
+  maven-version:
+    description: "Maven version required"
+    required: true
+    default: '3.9.6'
+runs:
+  using: "composite"
+  steps:
+      
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: "${{ inputs.java-version }}"
+          cache: 'maven'
+      
+      - shell: bash
+        env:
+          INPUT_MAVEN_VERSION: ${{ inputs.maven-version }}
+        run: wget https://dlcdn.apache.org/maven/maven-3/${INPUT_MAVEN_VERSION}/binaries/apache-maven-${INPUT_MAVEN_VERSION}-bin.tar.gz
+
+      - shell: bash
+        env:
+          INPUT_MAVEN_VERSION: ${{ inputs.maven-version }}
+        run: tar xzvf apache-maven-${INPUT_MAVEN_VERSION}-bin.tar.gz 
+
+      - shell: bash
+        env:
+          INPUT_MAVEN_VERSION: ${{ inputs.maven-version }}
+        run:  echo $PWD/apache-maven-${INPUT_MAVEN_VERSION}/bin >> $GITHUB_PATH
+
+      - shell: bash
+        run: mvn -v

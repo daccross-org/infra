@@ -1,0 +1,50 @@
+name: 'Build image'
+description: 'Build maven project'
+inputs:
+  project-key:
+    description: ""
+    required: true
+  runtime-environment:
+    description: ""
+    required: true
+  pom-location:
+    description: "Run maven package in a different directory"
+    required: false
+    default: "."
+  art-location:
+    description: ""
+    required: false
+    default: "target"
+  run-unit-tests:
+    description: ""
+    required: false
+    default: "false"
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      name: Unit Tests
+      if: inputs.run-unit-tests == 'true'
+      env:
+        INPUT_PROJECT_KEY: ${{ inputs.project-key }}
+        INPUT_RUNTIME_ENVIRONMENT: ${{ inputs.runtime-environment }}
+        INPUT_POM_LOC: ${{ inputs.pom-location }}
+      run: mvn test -f ${INPUT_POM_LOC}/pom.xml -P=${INPUT_RUNTIME_ENVIRONMENT}"
+    - shell: bash
+      env:
+        INPUT_PROJECT_KEY: ${{ inputs.project-key }}
+        INPUT_RUNTIME_ENVIRONMENT: ${{ inputs.runtime-environment }}
+        INPUT_POM_LOC: ${{ inputs.pom-location }}
+      run: mvn package -Dmaven.test.skip=true -f ${INPUT_POM_LOC}/pom.xml -P=${INPUT_RUNTIME_ENVIRONMENT}
+
+    - uses: actions/upload-artifact@v4
+      name: Upload compilation
+      with:
+        name: ${{ inputs.project-key }}
+        path: ${{ inputs.pom-location }}/${{ inputs.art-location }}/
+    - uses: actions/upload-artifact@v4
+      name: Upload libs
+      with:
+        name: ${{ inputs.project-key }}
+        path: ${{ inputs.pom-location }}/${{ inputs.lib-location }}/
+      if: always()

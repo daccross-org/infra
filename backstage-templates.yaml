@@ -7,3 +7,5 @@ spec:
   type: url
   targets:
     - https://github.com/daccross-org/infra/blob/main/backstage/templates/nodejs/template.yaml
+    - https://github.com/daccross-org/infra/blob/main/backstage/templates/camel-quarkus/template.yaml
+    - https://github.com/daccross-org/infra/blob/main/backstage/templates/quarkus/template.yaml
