@@ -56,6 +56,11 @@ on:
         required: false
         type: string
         default: "BackEnd/"
+      runtime-env:
+        description: "Runtime environment"
+        required: false
+        type: string
+        default: "war"
     outputs:
       docker-final-tag: 
         description: "Final Tag"
