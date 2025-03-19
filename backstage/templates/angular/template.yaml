@@ -1,14 +1,15 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: nodejs-backend-template
-  title: Create a Node.js Backend application with a CI pipeline
-  description: Create a starter Node.js backend application with a CI pipeline
+  name: angular-frontend-template
+  title: Create a Node.js Nginx Frontend application with a CI pipeline
+  description: Create a starter Node.js Nginx Frontend application with a CI pipeline
   tags:
     - nodejs
     - javascript
     - typescript
-    - express
+    - angular
+    - nginx
 spec:
   owner: casimon
   system: janus-idp
