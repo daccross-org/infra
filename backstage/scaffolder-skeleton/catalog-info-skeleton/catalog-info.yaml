@@ -13,11 +13,7 @@ metadata:
     {%- if values.hostUrl %}
     argocd/app-name: ${{ values.repoName }}
     {%- endif %}
-    {%- if values.ci == "../../scaffolder-skeletons/tekton-skeleton/" %}
-    tektonci/build-namespace: ${{ values.namespace }}
-    {%- endif %}
     backstage.io/kubernetes-id: ${{ values.repoName }}
-    backstage.io/techdocs-ref: dir:.
     github.com/project-slug: ${{ values.githubOrg }}/${{ values.repoName }}
 spec:
   type: ${{ values.applicationType }}
