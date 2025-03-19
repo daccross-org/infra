@@ -10,7 +10,7 @@ metadata:
     - typescript
     - express
 spec:
-  owner: janus-authors
+  owner: casimon
   system: janus-idp
   type: service
 
