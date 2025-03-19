@@ -1,11 +1,11 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: quarkus-backend-template
-  title: Create a Quarkus Backend application with a CI pipeline
-  description: Create a starter Quarkus backend application with a CI pipeline
+  name: spring-backend-template
+  title: Create a Springboot Backend application with a CI pipeline
+  description: Create a starter Springboot backend application with a CI pipeline
   tags:
-    - quarkus
+    - springboot
     - java
     - maven
 spec:
